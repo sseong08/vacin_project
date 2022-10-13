@@ -17,4 +17,5 @@ for item in item_list:
         diritem_list = os.listdir(dir_path)
         
         for diritem in diritem_list:
+            file-path= dir_path + '/' +diritem
         
