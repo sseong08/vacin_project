@@ -12,9 +12,9 @@ for item in item_list:
         else:
             print(path+'is not suspect')
             
-    if os.path.isdir(path):
-        dir_path = path
-        diritem_list = os.listdir(dir_path)
+    if os.path.isdir(path):  #만약 파일이라면
+        dir_path = path  #파일 주소를 dir_path변수에 저장
+        diritem_list = os.listdir(dir_path)  #dir_path item 정렬
         
         for diritem in diritem_list:
             file-path= dir_path + '/' +diritem
