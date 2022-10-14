@@ -41,13 +41,12 @@ for item in item_list:
         fread = fp.read() #파일을 읽음
         fp.close() #파일을 닫음
         hash=hashlib.sha256()
-        hash.update(fread)
+        hash.update(fread) #hash 업데이트
         sha256 = hash.hexdigest()
-    if any(sha256 == s for s in virus_list):
-        if sha256 == virus_list:  #sha256, virus_list 코드 추가하기
-            sus_path1 = path
-        else:
-            print(path+'is not suspect')
+    if any(sha256 == s for s in virus_list): 
+         sus_path1 = path #만약 파일의 해시값중 하나라도 virus_list와 같다면 sus_path변수에 저장
+    else:
+         print(path+'is not suspect') #아니라면 출력하기
             
     if os.path.isdir(path):  #만약 파일이라면
         dir_path = path  #파일 주소를 dir_path변수에 저장
@@ -55,18 +54,3 @@ for item in item_list:
         
         for diritem in diritem_list:
             file_path= dir_path + '/' +diritem
-# file_list = os.listdir('C:/')
-# for file in file_list:
-#     print(file_list)
-#     fp = open('readme.txt','rb') #바이너리 모드로 읽기 위해 r뒤에 b를 붙임
-#     fread = fp.read() #파일을 읽음
-#     fp.close() #파일을 닫음
-#     hash=hashlib.sha256()
-#     hash.update(fread)
-#     sha256 = hash.hexdigest()
-#     if any(sha256 == s for s in virus_list):
-#        print('yes')
-#     else:
-#       print('no')
-# # file_list = glob.glob('*.*')
-# # print(file_list)
