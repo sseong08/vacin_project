@@ -29,28 +29,69 @@ v22 ='09a46b3e1be080745a6d8d88d6b5bd351b1c7586ae0dc94d0c238ee36421cafa'
 
 virus_list= [v1, v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22]
 
+hellodir= None
+sus_path1 = None
+vir = None
+path = None
+dirpath = None
 
-root_dir = 'C:/'
-item_list = os.listdir(root_dir) #아이템 리스트 나열
 
-for item in item_list:
-    path = root_dir + '/' + item
-    
-    if os.path.isfile:
-        fp = open('readme.txt','rb') #바이너리 모드로 읽기 위해 r뒤에 b를 붙임
-        fread = fp.read() #파일을 읽음
-        fp.close() #파일을 닫음
-        hash=hashlib.sha256()
-        hash.update(fread) #hash 업데이트
-        sha256 = hash.hexdigest()
-    if any(sha256 == s for s in virus_list): 
-         sus_path1 = path #만약 파일의 해시값중 하나라도 virus_list와 같다면 sus_path변수에 저장
-    else:
-         print(path+'is not suspect') #아니라면 출력하기
-            
-    if os.path.isdir(path):  #만약 파일이라면
-        dir_path = path  #파일 주소를 dir_path변수에 저장
-        diritem_list = os.listdir(dir_path)  #dir_path item 정렬
+def scan():
+        try:
+            fp = open(path, 'rb')
+            fread = fp.read()
+            fp.close
+            hash=hashlib.sha256()
+            hash.update(fread)
+            sha256 = hash.hexdigest()
+            if any(sha256 == s for s in virus_list):
+                sus_path1 = []
+                sus_path1.append(path)
+            else:
+                print(path +' is not suspect')
+
+        except:
+            print('예외가 발생하였습니다.')
         
-        for diritem in diritem_list:
-            file_path= dir_path + '/' +diritem
+def dirscan():
+    dirpath = path
+    pathisdir = False
+    for dirpath, dirs, files in os.walk(dirpath):
+        for subdir in dirs:
+            print(os.path.join(dirpath,subdir))
+            path = os.path.join(dirpath, subdir)
+            if os.path.isfile(path):
+                scan()
+            if os.path.isdir(path):
+                pathisdir = True
+                break
+            break
+        if pathisdir == True:
+            continue
+
+root_dir = "C:/" 
+item_list = os.listdir(root_dir) #아이템 리스트 나열
+for item in item_list:
+    # print(item)
+    path = root_dir + '/' + item
+    # print (path)
+
+    if os.path.isfile(path):
+        scan()
+
+
+    if os.path.isdir(path):
+        # dirscan()
+        dirpath = path
+        for dirpath, dirs, files in os.walk(dirpath):
+            for subdir in dirs:
+                print(os.path.join(dirpath, subdir))
+                path = os.path.join(dirpath, subdir)
+                if os.path.isfile(path):
+                    scan()
+                if os.path.isdir(path):
+                    continue
+        
+
+if sus_path1 == None:
+    print('아무것도 없습니다.')
