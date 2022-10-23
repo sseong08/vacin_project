@@ -81,16 +81,22 @@ for item in item_list:
 
 
     if os.path.isdir(path):
-        # dirscan()
         dirpath = path
+        # dirscan()
         for dirpath, dirs, files in os.walk(dirpath):
+            pathisdir = False
             for subdir in dirs:
                 print(os.path.join(dirpath, subdir))
                 path = os.path.join(dirpath, subdir)
                 if os.path.isfile(path):
                     scan()
                 if os.path.isdir(path):
-                    continue
+                    pathisdir =True
+                    break
+            if pathisdir == True
+                dirpath = path
+                continue
+                    
         
 
 if sus_path1 == None:
