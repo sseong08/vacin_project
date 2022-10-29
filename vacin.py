@@ -1,8 +1,6 @@
 import os
+import pyautogui
 import hashlib
-import glob
-
-
 
 v1  = 'ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa'
 v2  ='c365ddaa345cfcaff3d629505572a484cff5221933d68e4a52130b8bb7badaf9'
@@ -26,78 +24,81 @@ v19 ='9588f2ef06b7e1c8509f32d8eddfa18041a9cc15b1c90d6da484a39f8dcdf967'
 v20 ='b43b234012b8233b3df6adb7c0a3b2b13cc2354dd6de27e092873bf58af2693c'
 v21 ='4186675cb6706f9d51167fb0f14cd3f8fcfb0065093f62b10a15f7d9a6c8d982'
 v22 ='09a46b3e1be080745a6d8d88d6b5bd351b1c7586ae0dc94d0c238ee36421cafa'
+t1 = '288B12A8600419F900747353BCC50D6F3C85290BA0F3DECDEC8B3401A2ABEA97'
 
-virus_list= [v1, v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22]
+virus_list= [t1, v1, v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22]
 
-hellodir= None
-sus_path1 = None
-vir = None
-path = None
-dirpath = None
-
-
+sus_path1 = []
+cantfind = []
+allfilelist = []
 def scan():
         try:
+            global sus_path1
             fp = open(path, 'rb')
             fread = fp.read()
             fp.close
             hash=hashlib.sha256()
             hash.update(fread)
             sha256 = hash.hexdigest()
-            if any(sha256 == s for s in virus_list):
-                sus_path1 = []
-                sus_path1.append(path)
+            allfilelist.append(file_path)
+            # if any(sha256 == s for s in virus_list):
+            if any(str in sha256 for str in virus_list):
+                sus_path1.append(file_path)
+                print ('\033[91m' + 'is suspect' + '\033[31m')
             else:
-                print(path +' is not suspect')
+                print('\033[93m' + 'no doubt' + '\033[33m')
 
         except:
-            print('예외가 발생하였습니다.')
-        
-def dirscan():
-    dirpath = path
-    pathisdir = False
-    for dirpath, dirs, files in os.walk(dirpath):
-        for subdir in dirs:
-            print(os.path.join(dirpath,subdir))
-            path = os.path.join(dirpath, subdir)
-            if os.path.isfile(path):
-                scan()
+            print('\033[94m' + '예외가 발생하였습니다.' + '\033[34m')
+            cantfind.append(file_path)
+
+def vacin(root_dir, prefix):
+    try:
+        global path
+        global file_path
+        files = os.listdir(root_dir)
+        for file in files:
+            path = os.path.join(root_dir, file)
+            file_path = prefix + path
+            print(file_path)
+            scan()
             if os.path.isdir(path):
-                pathisdir = True
-                break
-            break
-        if pathisdir == True:
-            continue
+                vacin(path, prefix)
+                scan()
+    except:
+       print("파일탐색중 에러가 났습니다.")
 
-root_dir = "C:/" 
-item_list = os.listdir(root_dir) #아이템 리스트 나열
-for item in item_list:
-    # print(item)
-    path = root_dir + '/' + item
-    # print (path)
+def interface():
+    btn1 = pyautogui.confirm('검사를 진행하시겠습니까?', 'vacin', buttons = ['yes', 'no'])
+    if btn1 == 'yes':
+        vacin(root_dir, "")
+        if not sus_path1:
+            print('아무것도 없습니다.')
+            print(str(len(sus_path1)) + '의심되는 파일 개수')
+            print(str(len(cantfind)) + '검사 불가 파일 개수')
+            print(str(len(allfilelist))+ '전체 검사한 파일 개수')
 
-    if os.path.isfile(path):
-        scan()
+            lensus = len(sus_path1)
+            lencant = len(cantfind)
+            lenfile= len(allfilelist)
 
+            finishbtn = pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개\n검사가 불가능한 파일: ' + str(lencant) + '개 \n검사 불가능한 파일 경로를 보시겠습니까?', buttons = ['yes', 'no'], title = 'vacin')
+            if finishbtn == 'yes':
+                pyautogui.confirm(str(cantfind), title = 'vacin')
+            else:
+                print('종료합니다.')
+        else:
+            print(sus_path1)
+            btn3 = pyautogui.confirm(text = '검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?', buttons = ['yes', 'no'], title = 'vacin')
+            if btn3 == 'yes':
+                for dlfdls in sus_path1:
+                    os.remove.dlfdls
+            else:
+                print('종료합니다.')
+    else:
+        print('종료합니다.')
 
-    if os.path.isdir(path):
-        dirpath = path
-        # dirscan()
-        for dirpath, dirs, files in os.walk(dirpath):
-            pathisdir = False
-            for subdir in dirs:
-                print(os.path.join(dirpath, subdir))
-                path = os.path.join(dirpath, subdir)
-                if os.path.isfile(path):
-                    scan()
-                if os.path.isdir(path):
-                    pathisdir =True
-                    break
-            if pathisdir == True
-                dirpath = path
-                continue
-                    
-        
-
-if sus_path1 == None:
-    print('아무것도 없습니다.')
+if __name__ == "__main__":
+    root_dir = "C:/Users/kkhhs/Downloads"
+    # vacin(root_dir, "")
+    interface()
