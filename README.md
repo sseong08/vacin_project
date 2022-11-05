@@ -13,6 +13,8 @@
 ### 9. 아니라면 종료
 
 
+#### 변수
+
 변수 이름| 정보|변수 타입
 ---| ---| ---|
 virus_list | 실제 악성코드의 sha256값을 모아둔 리스트|list
@@ -29,6 +31,15 @@ btn(숫자)| 인터페이스|
 lensus | sus_path1 안의 개체 개수|str
 lencant | cantfind 안의 개체 개수|str
 lenfile | allfilelist 안의 개체 개수|str
+
+#### 함수
+함수 이름 | 정보
+---|---|
+scan| vacin에서 받은 파일 경로를 sha256값으로 변경하고 virus_lost와 겹치는 것이 있는지 확인
+vacin|root_dir을 기본 경로로 그 속의 파일정보를 전부 출력
+interface| 사용자의 인터페이스를 구성
+
+
 
 ### 실행 모습
 #### 1.
