@@ -19,6 +19,16 @@ virus_list | 실제 악성코드의 sha256값을 모아둔 리스트
 sus_path1 | 의심되는 파일 경로를 모아놓는 리스트
 cantfind | 검사를 진행 할 수 없는 파일 경로를 모아놓는 리스트
 allfilelist | 전체 검사한 파일 경로를 모아놓는 리스트
+root_dir | 파일 검사를 진행할 상위 경로
+file_path | root_dir 안의 파일 경로
+fp | file_path 읽기 모드 진입
+fread | fp읽기
+hash | sha256으로 설정
+sha256 | file_path의 sha256 값 저장
+btn(숫자)| 인터페이스
+lensus | sus_path1 안의 개체 개수
+lencant | cantfind 안의 개체 개수
+lenfile | allfilelist 안의 개체 개수
 
 
 ![2](https://user-images.githubusercontent.com/73373959/200122735-847ea9a2-1691-4a36-b301-044c38ac8e04.png)
