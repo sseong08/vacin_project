@@ -2,8 +2,8 @@ import os
 import pyautogui
 import hashlib
 
-v1  = 'ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa'
-v2  ='c365ddaa345cfcaff3d629505572a484cff5221933d68e4a52130b8bb7badaf9'
+v1  ='ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa' #v1 ~V22 실제 악성코드의 sha256 코드
+v2  ='c365ddaa345cfcaff3d629505572a484cff5221933d68e4a52130b8bb7badaf9' #t1 테스트용 파일의 sha256 코드
 v3  ='09a46b3e1be080745a6d8d88d6b5bd351b1c7586ae0dc94d0c238ee36421cafa'
 v4  ='0a73291ab5607aef7db23863cf8e72f55bcb3c273bb47f00edf011515aeb5894'
 v5  ='428f22a9afd2797ede7c0583d34a052c32693cbb55f567a60298587b6e675c6f'
@@ -24,53 +24,87 @@ v19 ='9588f2ef06b7e1c8509f32d8eddfa18041a9cc15b1c90d6da484a39f8dcdf967'
 v20 ='b43b234012b8233b3df6adb7c0a3b2b13cc2354dd6de27e092873bf58af2693c'
 v21 ='4186675cb6706f9d51167fb0f14cd3f8fcfb0065093f62b10a15f7d9a6c8d982'
 v22 ='09a46b3e1be080745a6d8d88d6b5bd351b1c7586ae0dc94d0c238ee36421cafa'
-t1 = '288B12A8600419F900747353BCC50D6F3C85290BA0F3DECDEC8B3401A2ABEA97'
+t1 ='288B12A8600419F900747353BCC50D6F3C85290BA0F3DECDEC8B3401A2ABEA97'
 
 virus_list= [t1, v1, v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22]
 
-sus_path1 = []
-cantfind = []
-allfilelist = []
-def scan():
+sus_path1 = []   #의심되는 파일 경로를 모아놓는 리스트
+cantfind = []    #검사를 진행 할 수 없는 파일 경로를 모아놓는 리스트
+allfilelist = [] #전체 검사한 파일 경로를 모아놓는 리스트
+
+def scan():     #악성코드의 sha256와 컴퓨터 파일의 sha256을 대조하는 함수
         try:
             global sus_path1
-            fp = open(path, 'rb')
-            fread = fp.read()
-            fp.close
-            hash=hashlib.sha256()
-            hash.update(fread)
-            sha256 = hash.hexdigest()
-            allfilelist.append(file_path)
-            # if any(sha256 == s for s in virus_list):
-            if any(str in sha256 for str in virus_list):
-                sus_path1.append(file_path)
-                print ('\033[91m' + 'is suspect' + '\033[31m')
-            else:
-                print('\033[93m' + 'no doubt' + '\033[33m')
+            global sha256
+            fp = open(file_path, 'rb')                              #vacin 함수의 path변수 읽기모드 진입
+            fread = fp.read()                                       #fp 읽기
+            fp.close                                                #fp 읽은 후 닫기 - fread변수에 저장
+            hash=hashlib.sha256()                                   
+            hash.update(fread)                                      #fread의 sha256r 값을 구함
+            sha256 = hash.hexdigest()                               #fread를 sha256 값으로 변환 값을 sha256 변수에 저장
+            allfilelist.append(file_path) #만약 sha256의 값이 virus_list값과 하나라도 같다면
+            if sha256 in virus_list:
+                sus_path1.append(file_path)                         #sus_path1 리스트에 파일경로 추가
+                print ('\033[91m' + 'is suspect' + '\033[31m')      #is suspect출력 (빨간색)
+            else:                                                   #아니라면
+                print('\033[93m' + 'no doubt' + '\033[33m')         #no doubt출력 (노란색)
+        except:                                                     #예외가 발생했을 때
+            print('\033[94m' + '예외가 발생하였습니다.' + '\033[34m')#예외가 발생하였습니다. 출력 (파란색)
+            cantfind.append(file_path)                              #cantfind 리스트에 파일경로 추가
 
-        except:
-            print('\033[94m' + '예외가 발생하였습니다.' + '\033[34m')
-            cantfind.append(file_path)
-
-def vacin(root_dir, prefix):
+def vacin(root_dir, prefix):                                        #컴퓨터 내의 모든 파일을 출력할 함수
     try:
         global path
         global file_path
-        files = os.listdir(root_dir)
-        for file in files:
-            path = os.path.join(root_dir, file)
-            file_path = prefix + path
-            print(file_path)
-            scan()
-            if os.path.isdir(path):
+        files = os.listdir(root_dir)                                #root_dir은 main 함수에
+        for file in files:                                          #files의 file을 출력할 때 까지
+            path = os.path.join(root_dir, file)                     #root_dir변수와 file 변수를 합쳐 path라는 변수 생성
+            file_path = prefix + path           
+            print(file_path)                                        #file_path를 출력
+            scan()                                                  #위의 scan 함수를 이용하여 악성코드인지 검사
+            if os.path.isdir(path):                                 #만약 path가 파일이 아닌 폴더라면 폴더안의 파일을 출력후 검사
                 vacin(path, prefix)
                 scan()
-    except:
-       print("파일탐색중 에러가 났습니다.")
+    except:                                                         #예외가 발생했을때
+       print("파일탐색중 에러가 났습니다.")                           #파일탐색중 에러가 났습니다. 출력 (흰색)
 
-def interface():
-    btn1 = pyautogui.confirm('검사를 진행하시겠습니까?', 'vacin', buttons = ['yes', 'no'])
-    if btn1 == 'yes':
+def interface():                                                    #사용자의 인터페이스 구성 함수
+    btn1 = pyautogui.confirm('검사를 진행하시겠습니까?', 'vacin', buttons = ['전체 검사', '파일 경로 입력', '종료하기'])
+    if btn1 == '전체 검사':
+        root_dir = "C:/"
+        vacin(root_dir, "")
+        if not sus_path1:
+            print('아무것도 없습니다.')
+            print(str(len(sus_path1)) + '의심되는 파일 개수')
+            print(str(len(cantfind)) + '검사 불가 파일 개수')
+            print(str(len(allfilelist))+ '전체 검사한 파일 개수')
+            print(hash)
+
+            lensus = len(sus_path1)
+            lencant = len(cantfind)
+            lenfile= len(allfilelist)
+            
+            if lencant == 0:
+                pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개', buttons = ['ok'], title = 'vacin')
+            else:
+                finishbtn = pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개\n검사가 불가능한 파일: ' + str(lencant) + '개 \n검사 불가능한 파일 경로를 보시겠습니까?', buttons = ['yes', 'no'], title = 'vacin')
+                if finishbtn == 'yes':
+                    pyautogui.confirm(str(cantfind), title = 'vacin')
+                else:
+                    print('종료합니다.')
+        else:
+            print(sus_path1)
+            btn3 = pyautogui.confirm(text = '검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?', buttons = ['yes', 'no'], title = 'vacin')
+            if btn3 == 'yes':
+                for dlfdls in sus_path1:
+                    os.remove.dlfdls
+            else:
+                print('종료합니다.')
+    elif btn1 == '파일 경로 입력':
+        btn4 = pyautogui.prompt(title='vacin', default = '파일 경로 입력')
+        btn4 = btn4.replace('\\','/')
+        root_dir = btn4
+        print(root_dir)
         vacin(root_dir, "")
         if not sus_path1:
             print('아무것도 없습니다.')
@@ -81,12 +115,15 @@ def interface():
             lensus = len(sus_path1)
             lencant = len(cantfind)
             lenfile= len(allfilelist)
-
-            finishbtn = pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개\n검사가 불가능한 파일: ' + str(lencant) + '개 \n검사 불가능한 파일 경로를 보시겠습니까?', buttons = ['yes', 'no'], title = 'vacin')
-            if finishbtn == 'yes':
-                pyautogui.confirm(str(cantfind), title = 'vacin')
+            
+            if lencant == 0:
+                pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개', buttons = ['ok'], title = 'vacin')
             else:
-                print('종료합니다.')
+                finishbtn = pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개\n검사가 불가능한 파일: ' + str(lencant) + '개 \n검사 불가능한 파일 경로를 보시겠습니까?', buttons = ['yes', 'no'], title = 'vacin')
+                if finishbtn == 'yes':
+                    pyautogui.confirm(str(cantfind), title = 'vacin')
+                else:
+                    print('종료합니다.')
         else:
             print(sus_path1)
             btn3 = pyautogui.confirm(text = '검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?', buttons = ['yes', 'no'], title = 'vacin')
@@ -99,6 +136,4 @@ def interface():
         print('종료합니다.')
 
 if __name__ == "__main__":
-    root_dir = "C:/Users/kkhhs/Downloads"
-    # vacin(root_dir, "")
     interface()
