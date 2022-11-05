@@ -30,7 +30,10 @@ lensus | sus_path1 안의 개체 개수|str
 lencant | cantfind 안의 개체 개수|str
 lenfile | allfilelist 안의 개체 개수|str
 
-
-![2](https://user-images.githubusercontent.com/73373959/200122735-847ea9a2-1691-4a36-b301-044c38ac8e04.png)
-![3](https://user-images.githubusercontent.com/73373959/200122737-f2486fb9-1494-4d30-beb6-d67559a1742b.png)
+### 실행 모습
+#### 1.
 ![1](https://user-images.githubusercontent.com/73373959/200122738-a1c7bdcb-d05c-4eef-b86c-a488f60269bc.png)
+#### 2.
+![2](https://user-images.githubusercontent.com/73373959/200122735-847ea9a2-1691-4a36-b301-044c38ac8e04.png)
+#### 3.
+![3](https://user-images.githubusercontent.com/73373959/200122737-f2486fb9-1494-4d30-beb6-d67559a1742b.png)
