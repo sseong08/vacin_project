@@ -13,6 +13,7 @@
 9. 아니라면 종료
 
 ## 알고리즘
+<img src = "https://user-images.githubusercontent.com/73373959/201302202-25555509-0bca-4c17-a211-349b15673b1d.svg" width ="200" height="400"/>
 ![algorithm drawio](https://user-images.githubusercontent.com/73373959/201302202-25555509-0bca-4c17-a211-349b15673b1d.svg)
 
 #### 변수
