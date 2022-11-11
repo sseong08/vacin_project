@@ -13,8 +13,7 @@
 9. 아니라면 종료
 
 ## 알고리즘
-<img src = "https://user-images.githubusercontent.com/73373959/201302202-25555509-0bca-4c17-a211-349b15673b1d.svg" width ="200" height="400"/>
-![algorithm drawio](https://user-images.githubusercontent.com/73373959/201302202-25555509-0bca-4c17-a211-349b15673b1d.svg)
+<p align="center"><img src = "https://user-images.githubusercontent.com/73373959/201302202-25555509-0bca-4c17-a211-349b15673b1d.svg" width ="800" height="1308.6"/></p>
 
 #### 변수
 
@@ -45,9 +44,11 @@ interface| 사용자의 인터페이스를 구성
 
 
 ### 실행 모습
-#### 1.
-![1](https://user-images.githubusercontent.com/73373959/200122738-a1c7bdcb-d05c-4eef-b86c-a488f60269bc.png)
-#### 2.
-![2](https://user-images.githubusercontent.com/73373959/200122735-847ea9a2-1691-4a36-b301-044c38ac8e04.png)
-#### 3.
-![3](https://user-images.githubusercontent.com/73373959/200122737-f2486fb9-1494-4d30-beb6-d67559a1742b.png)
+<p align="center">1. 처음 프로그램을 실행하였을 때</p>
+<p align="center"><img src = "https://user-images.githubusercontent.com/73373959/200122738-a1c7bdcb-d05c-4eef-b86c-a488f60269bc.png"/></p>
+<br>
+<p align="center">2. 파일 경로를 입력하였을 때</p>
+<p align="center"><img src = "https://user-images.githubusercontent.com/73373959/200122735-847ea9a2-1691-4a36-b301-044c38ac8e04.png"/></p>
+<br>
+<p align="center">3. 검사가 종료 되었을 때</p>
+<p align="center"><img src = "https://user-images.githubusercontent.com/73373959/200122737-f2486fb9-1494-4d30-beb6-d67559a1742b.png"/></p>
