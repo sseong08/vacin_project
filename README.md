@@ -56,4 +56,5 @@ interface| 사용자의 인터페이스를 구성
 <br>
 <p align="center">3. 검사가 종료 되었을 때</p>
 <p align="center"><img src = "https://user-images.githubusercontent.com/73373959/200122737-f2486fb9-1494-4d30-beb6-d67559a1742b.png"/></p>
-<p align="center"><img src = ""/></p>
+<p align="center">5. 제거가 완료된 모
+<p align="center"><img src = "https://user-images.githubusercontent.com/73373959/201461735-80bd73db-797b-4a19-bbf1-e8f6c2adfda1.png"/></p>
