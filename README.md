@@ -1,5 +1,11 @@
 # vacin_project
 
+# 프로그램 구동전 인스톨해야할 모듈
+<p>pip install hashlib</p>
+<br>
+<p>pip install pyautogui</p>
+
+
 ## 작동원리
 
 1. 컴퓨터의 C드라이브, 혹은 입력받은 경로의 모든 파일을 검사
