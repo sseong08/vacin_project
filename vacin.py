@@ -33,7 +33,7 @@ sus_path1 = []   #의심되는 파일 경로를 모아놓는 리스트
 cantfind = []    #검사를 진행 할 수 없는 파일 경로를 모아놓는 리스트
 allfilelist = [] #전체 검사한 파일 경로를 모아놓는 리스트
 
-def scan():     #악성코드의 sha256와 컴퓨터 파일의 sha256을 대조하는 함수
+def scan():      #악성코드의 sha256와 컴퓨터 파일의 sha256을 대조하는 함수
         try:
             global sus_path1
             global sha256
@@ -43,7 +43,7 @@ def scan():     #악성코드의 sha256와 컴퓨터 파일의 sha256을 대조�
             hash=hashlib.sha256()                                   
             hash.update(fread)                                      #fread의 sha256r 값을 구함
             sha256 = hash.hexdigest()                               #fread를 sha256 값으로 변환 값을 sha256 변수에 저장
-            allfilelist.append(file_path) #만약 sha256의 값이 virus_list값과 하나라도 같다면
+            allfilelist.append(file_path)                           #만약 sha256의 값이 virus_list값과 하나라도 같다면
             if sha256 in virus_list:
                 sus_path1.append(file_path)                         #sus_path1 리스트에 파일경로 추가
                 print ('\033[91m' + 'is suspect' + '\033[31m')      #is suspect출력 (빨간색)
@@ -70,9 +70,6 @@ def vacin(root_dir, prefix):                                        #컴퓨터 �
        print("파일탐색중 에러가 났습니다.")                           #파일탐색중 에러가 났습니다. 출력 (흰색)
 
 def interface():                                                    #사용자의 인터페이스 구성 함수
-    # lensus = len(sus_path1)
-    # lencant = len(cantfind)
-    # lenfile= len(allfilelist)
 
     btn1 = pyautogui.confirm('검사를 진행하시겠습니까?', 'vacin', buttons = ['전체 검사', '파일 경로 입력', '종료하기'])
     if btn1 == '전체 검사':
@@ -115,9 +112,7 @@ def interface():                                                    #사용자�
             else:
                 print('종료합니다.')
     elif btn1 == '파일 경로 입력':
-        # lensus = len(sus_path1)
-        # lencant = len(cantfind)
-        # lenfile= len(allfilelist)
+
         btn4 = pyautogui.prompt(title='vacin', text= '파일 경로를 입력해주세요')
         if btn4 == '':
             print('종료합니다')
