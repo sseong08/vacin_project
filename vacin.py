@@ -1,7 +1,7 @@
 import os
 import pyautogui
 import hashlib
-import shutil
+
 
 v1  ='ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa'.lower() #v1 ~V22 실제 악성코드의 sha256 코드
 v2  ='c365ddaa345cfcaff3d629505572a484cff5221933d68e4a52130b8bb7badaf9'.lower() #t1 테스트용 파일의 sha256 코드
@@ -25,7 +25,7 @@ v19 ='9588f2ef06b7e1c8509f32d8eddfa18041a9cc15b1c90d6da484a39f8dcdf967'.lower()
 v20 ='b43b234012b8233b3df6adb7c0a3b2b13cc2354dd6de27e092873bf58af2693c'.lower()
 v21 ='4186675cb6706f9d51167fb0f14cd3f8fcfb0065093f62b10a15f7d9a6c8d982'.lower()
 v22 ='09a46b3e1be080745a6d8d88d6b5bd351b1c7586ae0dc94d0c238ee36421cafa'.lower()
-t1 ='288b12a8600419f900747353bcc50d6f3c85290ba0f3decdec8b3401a2abea97'.lower()
+t1 ='EC132CCE6D321DC488D3112C2905889C9859C1470DD31896578575F349FC7139'.lower()
 
 virus_list = [t1, v1, v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22]
 
@@ -153,15 +153,17 @@ def interface():                                                    #사용자�
                     btn3 = pyautogui.confirm(text = '검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?', buttons = ['yes', 'no'], title = 'vacin')
                     if btn3 == 'yes':
                         try:
+
                             print(sus_path1)
-                            newlist= [element.replace('\\', '/') for element in sus_path1]
-                            print(newlist)
-                            for susdir in newlist:
-                                # os.remove(susdir)
-                                shutil.rmtree(susdir)
+                            newlist = list(dict.fromkeys(sus_path1))
+                            newlist1= [element.replace('\\', '/') for element in newlist]
+                            print(newlist1)
+                            for susdir in newlist1:
+                                os.remove(susdir)
+                                # shutil.rmtree(susdir)
                             pyautogui.alert(text= '제거가 완료되었습니다.')
                         except:
-                            pyautogui.alert(text = '제거에 실패하였습니다.\n파일경로: ' +  str(newlist))
+                            pyautogui.alert(text = '제거에 실패하였습니다.\n파일경로: ' +  str(newlist1))
                     else:
                         print('종료합니다.')
             except:
