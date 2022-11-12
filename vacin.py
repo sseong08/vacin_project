@@ -27,13 +27,29 @@ v21 ='4186675cb6706f9d51167fb0f14cd3f8fcfb0065093f62b10a15f7d9a6c8d982'.lower()
 v22 ='09a46b3e1be080745a6d8d88d6b5bd351b1c7586ae0dc94d0c238ee36421cafa'.lower()
 t1 ='288b12a8600419f900747353bcc50d6f3c85290ba0f3decdec8b3401a2abea97'.lower()
 
-virus_list= [t1, v1, v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22]
+virus_list = [t1, v1, v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22]
 
 sus_path1 = []   #의심되는 파일 경로를 모아놓는 리스트
 cantfind = []    #검사를 진행 할 수 없는 파일 경로를 모아놓는 리스트
 allfilelist = [] #전체 검사한 파일 경로를 모아놓는 리스트
 
-def scan():      #악성코드의 sha256와 컴퓨터 파일의 sha256을 대조하는 함수
+def vacin(root_dir, prefix):                                        #컴퓨터 내의 모든 파일을 출력할 함수
+    try:
+        global path
+        global file_path
+        files = os.listdir(root_dir)                                #root_dir은 main 함수에
+        for file in files:                                          #files의 file을 출력할 때 까지
+            path = os.path.join(root_dir, file)                     #root_dir변수와 file 변수를 합쳐 path라는 변수 생성
+            file_path = prefix + path           
+            print(file_path)                                        #file_path를 출력
+            scan()                                                  #위의 scan 함수를 이용하여 악성코드인지 검사
+            if os.path.isdir(path):                                 #만약 path가 파일이 아닌 폴더라면 폴더안의 파일을 출력후 검사
+                vacin(path, prefix)
+                scan()
+    except:                                                         #예외가 발생했을때
+       print("파일탐색중 에러가 났습니다.")                           #파일탐색중 에러가 났습니다. 출력 (흰색)
+
+def scan():                                                         #악성코드의 sha256와 컴퓨터 파일의 sha256을 대조하는 함수
         try:
             global sus_path1
             global sha256
@@ -53,21 +69,7 @@ def scan():      #악성코드의 sha256와 컴퓨터 파일의 sha256을 대조
             print('\033[94m' + '예외가 발생하였습니다.' + '\033[34m')#예외가 발생하였습니다. 출력 (파란색)
             cantfind.append(file_path)                              #cantfind 리스트에 파일경로 추가
 
-def vacin(root_dir, prefix):                                        #컴퓨터 내의 모든 파일을 출력할 함수
-    try:
-        global path
-        global file_path
-        files = os.listdir(root_dir)                                #root_dir은 main 함수에
-        for file in files:                                          #files의 file을 출력할 때 까지
-            path = os.path.join(root_dir, file)                     #root_dir변수와 file 변수를 합쳐 path라는 변수 생성
-            file_path = prefix + path           
-            print(file_path)                                        #file_path를 출력
-            scan()                                                  #위의 scan 함수를 이용하여 악성코드인지 검사
-            if os.path.isdir(path):                                 #만약 path가 파일이 아닌 폴더라면 폴더안의 파일을 출력후 검사
-                vacin(path, prefix)
-                scan()
-    except:                                                         #예외가 발생했을때
-       print("파일탐색중 에러가 났습니다.")                           #파일탐색중 에러가 났습니다. 출력 (흰색)
+
 
 def interface():                                                    #사용자의 인터페이스 구성 함수
 
@@ -141,7 +143,7 @@ def interface():                                                    #사용자�
                         else:
                             print('종료합니다.')
                 else:
-                    print('아무것도 없습니다.')
+                    print('의심되는 파일이 존재합니다.')
                     print(str(len(sus_path1)) + '의심되는 파일 개수')
                     print(str(len(cantfind)) + '검사 불가 파일 개수')
                     print(str(len(allfilelist))+ '전체 검사한 파일 개수')
@@ -155,10 +157,11 @@ def interface():                                                    #사용자�
                             newlist= [element.replace('\\', '/') for element in sus_path1]
                             print(newlist)
                             for susdir in newlist:
-                                os.remove(susdir)
+                                # os.remove(susdir)
+                                shutil.rmtree(susdir)
                             pyautogui.alert(text= '제거가 완료되었습니다.')
                         except:
-                            pyautogui.alert(text = '제거에 실패하였습니다.\n파일경로: ' +  str(sus_path1))
+                            pyautogui.alert(text = '제거에 실패하였습니다.\n파일경로: ' +  str(newlist))
                     else:
                         print('종료합니다.')
             except:
