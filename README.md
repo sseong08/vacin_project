@@ -1,8 +1,6 @@
 # vacin_project
 
 # 프로그램 구동전 인스톨해야할 모듈
-<p>pip install hashlib</p>
-<br>
 <p>pip install pyautogui</p>
 
 
