@@ -38,14 +38,18 @@ def vacin(root_dir, prefix):                                        #컴퓨터 �
         global path
         global file_path
         files = os.listdir(root_dir)                                #root_dir은 main 함수에
-        for file in files:                                          #files의 file을 출력할 때 까지
-            path = os.path.join(root_dir, file)                     #root_dir변수와 file 변수를 합쳐 path라는 변수 생성
-            file_path = prefix + path           
-            print(file_path)                                        #file_path를 출력
-            scan()                                                  #위의 scan 함수를 이용하여 악성코드인지 검사
-            if os.path.isdir(path):                                 #만약 path가 파일이 아닌 폴더라면 폴더안의 파일을 출력후 검사
-                vacin(path, prefix)
-                scan()
+        if os.path.isfile(root_dir):
+            vacin(path, prefix)
+            scan
+        else:
+            for file in files:                                          #files의 file을 출력할 때 까지
+                path = os.path.join(root_dir, file)                     #root_dir변수와 file 변수를 합쳐 path라는 변수 생성
+                file_path = prefix + path           
+                print(file_path)                                        #file_path를 출력
+                scan()                                                  #위의 scan 함수를 이용하여 악성코드인지 검사
+                if os.path.isdir(path):                                 #만약 path가 파일이 아닌 폴더라면 폴더안의 파일을 출력후 검사
+                    vacin(path, prefix)
+                    scan()
     except:                                                         #예외가 발생했을때
        print("파일탐색중 에러가 났습니다.")                           #파일탐색중 에러가 났습니다. 출력 (흰색)
 
