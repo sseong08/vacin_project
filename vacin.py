@@ -37,11 +37,11 @@ def vacin(root_dir, prefix):                                        #컴퓨터 �
     try:
         global path
         global file_path
-        files = os.listdir(root_dir)                                #root_dir은 main 함수에
-        if os.path.isfile(root_dir):
-            vacin(path, prefix)
-            scan
+        if os.path.isdfile(root_dir):
+            file_path = root_dir
+            scan()
         else:
+        files = os.listdir(root_dir)                                #root_dir은 main 함수
             for file in files:                                          #files의 file을 출력할 때 까지
                 path = os.path.join(root_dir, file)                     #root_dir변수와 file 변수를 합쳐 path라는 변수 생성
                 file_path = prefix + path           
