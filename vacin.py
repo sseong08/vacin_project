@@ -1,6 +1,10 @@
 import os
 import pyautogui
 import hashlib
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import getpass
+import time
 
 
 v1  ='ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa'.lower() #v1 ~V22 실제 악성코드의 sha256 코드
@@ -37,11 +41,11 @@ def vacin(root_dir, prefix):                                        #컴퓨터 �
     try:
         global path
         global file_path
-        if os.path.isdfile(root_dir):
+        if os.path.isfile(root_dir):
             file_path = root_dir
             scan()
         else:
-        files = os.listdir(root_dir)                                #root_dir은 main 함수
+            files = os.listdir(root_dir)                                #root_dir은 main 함수에
             for file in files:                                          #files의 file을 출력할 때 까지
                 path = os.path.join(root_dir, file)                     #root_dir변수와 file 변수를 합쳐 path라는 변수 생성
                 file_path = prefix + path           
@@ -157,12 +161,11 @@ def interface():                                                    #사용자�
                     btn3 = pyautogui.confirm(text = '검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?', buttons = ['yes', 'no'], title = 'vacin')
                     if btn3 == 'yes':
                         try:
-
                             print(sus_path1)
                             newlist = list(dict.fromkeys(sus_path1))
                             newlist1= [element.replace('\\', '/') for element in newlist]
-                            print(newlist1)
-                            for susdir in newlist1:
+                            print(newlist)
+                            for susdir in newlist:
                                 os.remove(susdir)
                                 # shutil.rmtree(susdir)
                             pyautogui.alert(text= '제거가 완료되었습니다.')
@@ -175,5 +178,47 @@ def interface():                                                    #사용자�
     else:
         print('종료합니다.')
 
+class Target:
+    hostname = getpass.getuser()
+    watchDir = "C:/Users/" + hostname + "/Downloads"
+    #watchDir에 감시하려는 디렉토리를 명시한다.
+
+    def __init__(self):
+        self.observer = Observer()   #observer객체를 만듦
+
+    def run(self):
+        event_handler = Handler()
+        self.observer.schedule(event_handler, self.watchDir, recursive=True)
+        self.observer.start()
+        try:
+            while True:
+                time.sleep(1)
+        except:
+            self.observer.stop()
+            print("Error")
+            self.observer.join()
+
+class Handler(FileSystemEventHandler):
+#FileSystemEventHandler 클래스를 상속받음.
+#아래 핸들러들을 오버라이드 함
+
+    #파일, 디렉터리가 move 되거나 rename 되면 실행
+    def on_moved(self, event):
+        print("moved")
+        print(event.src_path)
+
+    def on_created(self, event): #파일, 디렉터리가 생성되면 실행
+        print("created")
+        yetfile = event.src_path
+        root_dir = yetfile.replace('\\','/')
+        print(root_dir)
+        vacin(root_dir, "")
+
+    def on_deleted(self, event): #파일, 디렉터리가 삭제되면 실행
+        print("deleted")
+        print(event.src_path)
+
 if __name__ == "__main__":
-    interface()
+    # interface()
+    w = Target()
+    w.run()
