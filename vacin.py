@@ -1,11 +1,15 @@
-import os
-import pyautogui
-import hashlib
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 import getpass
+import hashlib
+import os
 import time
+from multiprocessing import Process
+from tkinter import *
+from tkinter import filedialog
 
+import pyautogui
+from pynput.keyboard import Key, KeyCode, Listener
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 v1  ='ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa'.lower() #v1 ~V22 실제 악성코드의 sha256 코드
 v2  ='c365ddaa345cfcaff3d629505572a484cff5221933d68e4a52130b8bb7badaf9'.lower() #t1 테스트용 파일의 sha256 코드
@@ -29,13 +33,19 @@ v19 ='9588f2ef06b7e1c8509f32d8eddfa18041a9cc15b1c90d6da484a39f8dcdf967'.lower()
 v20 ='b43b234012b8233b3df6adb7c0a3b2b13cc2354dd6de27e092873bf58af2693c'.lower()
 v21 ='4186675cb6706f9d51167fb0f14cd3f8fcfb0065093f62b10a15f7d9a6c8d982'.lower()
 v22 ='09a46b3e1be080745a6d8d88d6b5bd351b1c7586ae0dc94d0c238ee36421cafa'.lower()
-t1 ='EC132CCE6D321DC488D3112C2905889C9859C1470DD31896578575F349FC7139'.lower()
+t1 ='E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855'.lower()
+t2 ='0D6AFB7E939F0936F40AFDC759B5A354EA5427EC250A47E7B904AB1EA800A01D'.lower()
+t4 ='8739C76E681F900923B900C9DF0EF75CF421D39CABB54650C4B9AD19B6A76D85'.lower()
+
 
 virus_list = [t1, v1, v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22]
 
 sus_path1 = []   #의심되는 파일 경로를 모아놓는 리스트
 cantfind = []    #검사를 진행 할 수 없는 파일 경로를 모아놓는 리스트
 allfilelist = [] #전체 검사한 파일 경로를 모아놓는 리스트
+
+
+#####################################################################################################################
 
 def vacin(root_dir, prefix):                                        #컴퓨터 내의 모든 파일을 출력할 함수
     try:
@@ -57,6 +67,8 @@ def vacin(root_dir, prefix):                                        #컴퓨터 �
     except:                                                         #예외가 발생했을때
        print("파일탐색중 에러가 났습니다.")                           #파일탐색중 에러가 났습니다. 출력 (흰색)
 
+################################################################################################################################
+
 def scan():                                                         #악성코드의 sha256와 컴퓨터 파일의 sha256을 대조하는 함수
         try:
             global sus_path1
@@ -70,113 +82,247 @@ def scan():                                                         #악성코�
             allfilelist.append(file_path)                           #만약 sha256의 값이 virus_list값과 하나라도 같다면
             if sha256 in virus_list:
                 sus_path1.append(file_path)                         #sus_path1 리스트에 파일경로 추가
-                print ('\033[91m' + 'is suspect' + '\033[31m')      #is suspect출력 (빨간색)
+                # print ('is suspect')                                #is suspect출력 (빨간색)
+                time.sleep(0.1)
             else:                                                   #아니라면
-                print('\033[93m' + 'no doubt' + '\033[33m')         #no doubt출력 (노란색)
+                # print('no doubt')
+                time.sleep(0.1)                                     #no doubt출력 (노란색)
         except:                                                     #예외가 발생했을 때
-            print('\033[94m' + '예외가 발생하였습니다.' + '\033[34m')#예외가 발생하였습니다. 출력 (파란색)
+            # print('예외가 발생하였습니다.')#예외가 발생하였습니다. 출력 (파란색)
             cantfind.append(file_path)                              #cantfind 리스트에 파일경로 추가
+            
 
+################################################################################################################################
 
+# def interface():                                                    #사용자의 인터페이스 구성 함수
 
-def interface():                                                    #사용자의 인터페이스 구성 함수
-
-    btn1 = pyautogui.confirm('검사를 진행하시겠습니까?', 'vacin', buttons = ['전체 검사', '파일 경로 입력', '종료하기'])
-    if btn1 == '전체 검사':
-        root_dir = "C:/"
-        vacin(root_dir, "")
-        if not sus_path1:
-            print('아무것도 없습니다.')
-            print(str(len(sus_path1)) + '의심되는 파일 개수')
-            print(str(len(cantfind)) + '검사 불가 파일 개수')
-            print(str(len(allfilelist))+ '전체 검사한 파일 개수')
-            print(hash)
+#     btn1 = pyautogui.confirm('검사를 진행하시겠습니까?', 'vacin', buttons = ['전체 검사', '파일 경로 입력', '종료하기'])
+#     if btn1 == '전체 검사':
+#         root_dir = "C:/"
+#           
+#         if not sus_path1:
+#             print('아무것도 없습니다.')
+#             print(str(len(sus_path1)) + '의심되는 파일 개수')
+#             print(str(len(cantfind)) + '검사 불가 파일 개수')
+#             print(str(len(allfilelist))+ '전체 검사한 파일 개수')
+#             print(hash)
 
             lensus = len(sus_path1)
             lencant = len(cantfind)
             lenfile= len(allfilelist)
             
             
-            if lencant == 0:
-                pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개', buttons = ['ok'], title = 'vacin')
-            else:
-                finishbtn = pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개\n검사가 불가능한 파일: ' + str(lencant) + '개 \n검사 불가능한 파일 경로를 보시겠습니까?', buttons = ['yes', 'no'], title = 'vacin')
-                if finishbtn == 'yes':
-                    pyautogui.confirm(str(cantfind), title = 'vacin')
-                else:
-                    print('종료합니다.')
-        else:
-            print('의심되는 파일이 존재합니다')
-            print(str(len(sus_path1)) + '의심되는 파일 개수')
-            print(str(len(cantfind)) + '검사 불가 파일 개수')
-            print(str(len(allfilelist))+ '전체 검사한 파일 개수')
-            print(hash)
+#             if lencant == 0:
+#                 pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개', buttons = ['ok'], title = 'vacin')
+#             else:
+#                 finishbtn = pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개\n검사가 불가능한 파일: ' + str(lencant) + '개 \n검사 불가능한 파일 경로를 보시겠습니까?', buttons = ['yes', 'no'], title = 'vacin')
+#                 if finishbtn == 'yes':
+#                     pyautogui.confirm(str(cantfind), title = 'vacin')
+#                 else:
+#                     print('종료합니다.')
+#         else:
+#             print('의심되는 파일이 존재합니다')
+#             print(str(len(sus_path1)) + '의심되는 파일 개수')
+#             print(str(len(cantfind)) + '검사 불가 파일 개수')
+#             print(str(len(allfilelist))+ '전체 검사한 파일 개수')
+#             print(hash)
 
-            lensus = len(sus_path1)
-            lencant = len(cantfind)
-            lenfile= len(allfilelist)
-            btn3 = pyautogui.confirm(text = '검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?', buttons = ['yes', 'no'], title = 'vacin')
-            if btn3 == 'yes':
-                for dlfdls in sus_path1:
-                    os.remove.dlfdls
-            else:
-                print('종료합니다.')
-    elif btn1 == '파일 경로 입력':
+#             lensus = len(sus_path1)
+#             lencant = len(cantfind)
+#             lenfile= len(allfilelist)
+#             btn3 = pyautogui.confirm(text = '검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?', buttons = ['yes', 'no'], title = 'vacin')
+#             if btn3 == 'yes':
+#                 for dlfdls in sus_path1:
+#                     os.remove.dlfdls
+#             else:
+#                 print('종료합니다.')
+#     elif btn1 == '파일 경로 입력':
 
-        btn4 = pyautogui.prompt(title='vacin', text= '파일 경로를 입력해주세요')
-        if btn4 == '':
-            print('종료합니다')
-        else:
-            try:
-                btn4 = btn4.replace('\\','/')
-                root_dir = btn4
-                print(root_dir)
-                vacin(root_dir, "")
-                if not sus_path1:
-                    print('아무것도 없습니다.')
-                    print(str(len(sus_path1)) + '의심되는 파일 개수')
-                    print(str(len(cantfind)) + '검사 불가 파일 개수')
-                    print(str(len(allfilelist))+ '전체 검사한 파일 개수')
-                    lensus = len(sus_path1)
-                    lencant = len(cantfind)
-                    lenfile= len(allfilelist)
+#         btn4 = pyautogui.prompt(title='vacin', text= '파일 경로를 입력해주세요')
+#         if btn4 == '':
+#             print('종료합니다')
+#         else:
+#             try:
+#                 btn4 = btn4.replace('\\','/')
+#                 root_dir = btn4
+#                 print(root_dir)
+#                 vacin(root_dir, "")
+#                 if not sus_path1:
+#                     print('아무것도 없습니다.')
+#                     print(str(len(sus_path1)) + '의심되는 파일 개수')
+#                     print(str(len(cantfind)) + '검사 불가 파일 개수')
+#                     print(str(len(allfilelist))+ '전체 검사한 파일 개수')
+#                     lensus = len(sus_path1)
+#                     lencant = len(cantfind)
+#                     lenfile= len(allfilelist)
 
                     
-                    if lencant == 0:
-                        pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개', buttons = ['ok'], title = 'vacin')
-                    else:
-                        finishbtn = pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개\n검사가 불가능한 파일: ' + str(lencant) + '개 \n검사 불가능한 파일 경로를 보시겠습니까?', buttons = ['yes', 'no'], title = 'vacin')
-                        if finishbtn == 'yes':
-                            pyautogui.confirm(str(cantfind), title = 'vacin')
-                        else:
-                            print('종료합니다.')
-                else:
-                    print('의심되는 파일이 존재합니다.')
-                    print(str(len(sus_path1)) + '의심되는 파일 개수')
-                    print(str(len(cantfind)) + '검사 불가 파일 개수')
-                    print(str(len(allfilelist))+ '전체 검사한 파일 개수')
-                    lensus = len(sus_path1)
-                    lencant = len(cantfind)
-                    lenfile= len(allfilelist)
-                    btn3 = pyautogui.confirm(text = '검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?', buttons = ['yes', 'no'], title = 'vacin')
-                    if btn3 == 'yes':
-                        try:
-                            print(sus_path1)
-                            newlist = list(dict.fromkeys(sus_path1))
-                            newlist1= [element.replace('\\', '/') for element in newlist]
-                            print(newlist)
-                            for susdir in newlist:
-                                os.remove(susdir)
-                                # shutil.rmtree(susdir)
-                            pyautogui.alert(text= '제거가 완료되었습니다.')
-                        except:
-                            pyautogui.alert(text = '제거에 실패하였습니다.\n파일경로: ' +  str(newlist1))
-                    else:
-                        print('종료합니다.')
-            except:
-                print('종료합니다')
+#                     if lencant == 0:
+#                         pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개', buttons = ['ok'], title = 'vacin')
+#                     else:
+#                         finishbtn = pyautogui.confirm('검사가 종료되었습니다. \n검사한 파일: '+str(lenfile)+'개\n의심되는 파일:' + str(lensus) + '개\n검사가 불가능한 파일: ' + str(lencant) + '개 \n검사 불가능한 파일 경로를 보시겠습니까?', buttons = ['yes', 'no'], title = 'vacin')
+#                         if finishbtn == 'yes':
+#                             pyautogui.confirm(str(cantfind), title = 'vacin')
+#                         else:
+#                             print('종료합니다.')
+#                 else:
+#                     print('의심되는 파일이 존재합니다.')
+#                     print(str(len(sus_path1)) + '의심되는 파일 개수')
+#                     print(str(len(cantfind)) + '검사 불가 파일 개수')
+#                     print(str(len(allfilelist))+ '전체 검사한 파일 개수')
+#                     lensus = len(sus_path1)
+#                     lencant = len(cantfind)
+#                     lenfile= len(allfilelist)
+#                     btn3 = pyautogui.confirm(text = '검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?', buttons = ['yes', 'no'], title = 'vacin')
+#                     if btn3 == 'yes':
+#                         try:
+#                             print(sus_path1)
+#                             newlist = list(dict.fromkeys(sus_path1))
+#                             newlist1= [element.replace('\\', '/') for element in newlist]
+#                             print(newlist)
+#                             for susdir in newlist:
+#                                 os.remove(susdir)
+#                                 # shutil.rmtree(susdir)
+#                             pyautogui.alert(text= '제거가 완료되었습니다.')
+#                         except:
+#                             pyautogui.alert(text = '제거에 실패하였습니다.\n파일경로: ' +  str(newlist1))
+#                     else:
+#                         print('종료합니다.')
+#             except:
+#                 print('종료합니다')
+#     else:
+#         print('종료합니다.')
+
+###############################################################################################################################
+
+# from tkinter import Label, Tk, Toplevel
+
+win = Tk()
+
+def toplevelwin():
+    global top
+    lensus = len(sus_path1)
+    lencant = len(cantfind)
+    lenfile = len(allfilelist)
+    top = Toplevel()
+    top.geometry("500x300")
+    top.title("vacin")
+    if lensus >= 1:
+        text = Label(top, text='검사가 종료되었습니다.')
+        text1 = Label(top, text='검사한 파일: ' + str(lenfile))
+        text2 = Label(top, text='의심되는 파일: ' + str(lensus))
+        text3 = Label(top, text='검사를 진행할 수 없는 파일: ' + str(lencant))
+        # text4 = Label(top, text="의심되는 파일 경로: " + str(sus_path1))
+        text5 = Label(top, text = "의심되는 파일을 제거할까요?")
+        asslabel = Label(top, width= 500)
+        btn_y = Button(asslabel, text="YES", command= removesus)
+        btn_n = Button(asslabel, text="NO", command = top.destroy)
+        text.pack(pady=5)
+        text1.pack(pady=5)
+        text2.pack(pady=5)
+        text3.pack(pady=5)
+        text5.pack(pady=5)
+        asslabel.pack(pady=8)
+        btn_y.pack(side="left")
+        btn_n.pack(side="left")
+        # text4.pack()
+        with open('susfile.txt','w',encoding='UTF-8') as f:
+            for name in sus_path1:
+                f.write(name+'\n')
+
     else:
-        print('종료합니다.')
+        text = Label(top, text='검사가 종료되었습니다.')
+        text1 = Label(top, text='검사한 파일: ' + str(lenfile))
+        text2 = Label(top, text='의심되는 파일: ' + str(lensus))
+        text3 = Label(top, text='검사를 진행할 수 없는 파일: ' + str(lencant))
+        text.pack()
+        text1.pack()
+        text2.pack()
+        text3.pack()
+
+
+    # lab = Label(top, text='검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?').pack()
+def removesus():
+    try:
+        print(sus_path1)
+        newlist = list(dict.fromkeys(sus_path1))
+        newlist1= [element.replace('\\', '/') for element in newlist]
+        print(newlist)
+        for susdir in newlist:
+            os.remove(susdir)
+            # shutil.rmtree(susdir)
+        pyautogui.alert(text= '제거가 완료되었습니다.')
+        top.destory
+    except:
+        pyautogui.alert(text = '제거에 실패하였습니다.\n파일경로: ' +  str(newlist1))
+
+def Cdrive():
+    root_dir = "C:/"
+    vacin(root_dir, "")
+    toplevelwin()
+#아무것도 없을 때 이벤트
+#있을 때 이벤트
+
+def findfile():
+    win.filename = filedialog.askopenfilename(initialdir="C:/",title='파일선택', filetypes=(('모든파일','*.*'), ('jpg files', '*.jpg')))
+    root_dir = win.filename
+    vacin(root_dir,"")
+    toplevelwin()
+#아무것도 없을 때 이벤트
+#있을 때 이벤트
+
+def finddir():
+    win.dirName=filedialog.askdirectory()
+    root_dir = win.dirName
+    vacin(root_dir,"")
+    toplevelwin()
+
+
+def selftype():
+    def clickevent():
+        root_dir = entry1.get()
+        vacin(root_dir,"")
+        top1.destroy()
+        toplevelwin()
+    top1= Toplevel()
+    top1.geometry("500x200")
+    top1.title("vacin")
+    entry1 = Entry(top1, width=30, border=1, relief='solid')
+    entry1.pack()
+    btn = Button(top1, text='완료', command=clickevent)
+    btn.pack()
+
+def first():
+    
+    win.title("vacin")
+    win.resizable(FALSE, FALSE)
+    win.geometry("400x500")
+    win.option_add("*Font", "맑은고딕 15")
+
+    lb1 =Label(win, text =  "검사 방법 선택")
+    photo = PhotoImage(file="setting.png")
+    photo = photo.subsample(20,20)
+    pbtn = Button(win, image=photo)
+    pbtn.pack(anchor="e")
+    lb1.pack(side = "top")
+    # pbtn.pack(anchor ="e",side='top')
+    btn1 = Button(win, text="C드라이브 검사", width=18, command = Cdrive)
+    btn2 = Button(win, text="폴더 불러오기", width=18, command=finddir)
+    btn3 = Button(win, text="파일 불러오기", width=18, command = findfile)
+    btn4 = Button(win, text="파일경로 직접 입력", width=18, command=selftype)
+    btn5 = Button(win, text="종료하기", width=18, command = win.destroy)
+    photo = PhotoImage(file="setting.png")
+    plable = Label(win, image=photo)
+    btn1.place(x=80, y=100)
+    btn2.place(x=80, y=150)
+    btn3.place(x=80, y=200)
+    btn4.place(x=80, y=250)
+    btn5.place(x=80, y=300)
+
+
+    win.mainloop()
+
+#############################################################################################################################
 
 class Target:
     hostname = getpass.getuser()
@@ -197,7 +343,8 @@ class Target:
             self.observer.stop()
             print("Error")
             self.observer.join()
-
+ 
+ 
 class Handler(FileSystemEventHandler):
 #FileSystemEventHandler 클래스를 상속받음.
 #아래 핸들러들을 오버라이드 함
@@ -218,7 +365,51 @@ class Handler(FileSystemEventHandler):
         print("deleted")
         print(event.src_path)
 
+#-------------------------------------------------------------------------------------------------------------------------------------
+
+# def short_key():
+#     store = set()
+    
+#     HOT_KEYS = {
+#         'print_hello': set([ Key.alt_l, Key.shift_l ,KeyCode(char='v')] )
+#     }
+#     def print_hello():
+#         first()
+#     def handleKeyPress( key ):
+#         store.add( key )
+    
+#         for action, trigger in HOT_KEYS.items():
+#             CHECK = all([ True if triggerKey in store else False for triggerKey in trigger ])
+    
+#             if CHECK:
+#                 try:
+#                     func = eval( action )
+#                     if callable( func ):
+#                         func()
+#                 except NameError as err:
+#                     print( err )
+    
+#     def handleKeyRelease( key ):
+#         if key in store:
+#             store.remove( key )
+            
+#         # 종료
+#         if key == Key.esc:
+#             return False
+    
+#     with Listener(on_press=handleKeyPress, on_release=handleKeyRelease) as listener:
+#         listener.join()
+
+#-------------------------------------------------------------------------------------------------------------------------------------
+
+
 if __name__ == "__main__":
-    # interface()
-    w = Target()
-    w.run()
+    # w = Target()
+    # s = Process(target = short_key)
+    # a = Process(target = w.run)
+    # a.start()
+    # s.start()
+    # w = Target()
+    # w.run()
+    first()
+
