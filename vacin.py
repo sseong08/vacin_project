@@ -5,11 +5,14 @@ import time
 from multiprocessing import Process
 from tkinter import *
 from tkinter import filedialog
-
+import sys
+import subprocess
+import tempfile
 import pyautogui
 from pynput.keyboard import Key, KeyCode, Listener
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
+import pickle
 
 v1  ='ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa'.lower() #v1 ~V22 실제 악성코드의 sha256 코드
 v2  ='c365ddaa345cfcaff3d629505572a484cff5221933d68e4a52130b8bb7badaf9'.lower() #t1 테스트용 파일의 sha256 코드
@@ -33,9 +36,9 @@ v19 ='9588f2ef06b7e1c8509f32d8eddfa18041a9cc15b1c90d6da484a39f8dcdf967'.lower()
 v20 ='b43b234012b8233b3df6adb7c0a3b2b13cc2354dd6de27e092873bf58af2693c'.lower()
 v21 ='4186675cb6706f9d51167fb0f14cd3f8fcfb0065093f62b10a15f7d9a6c8d982'.lower()
 v22 ='09a46b3e1be080745a6d8d88d6b5bd351b1c7586ae0dc94d0c238ee36421cafa'.lower()
-t1 ='E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855'.lower()
-t2 ='0D6AFB7E939F0936F40AFDC759B5A354EA5427EC250A47E7B904AB1EA800A01D'.lower()
-t4 ='8739C76E681F900923B900C9DF0EF75CF421D39CABB54650C4B9AD19B6A76D85'.lower()
+t1 ='A37220E099E01D00D26E74678A0632F5A1F5FE819D864F593A2FAA01071706D7'.lower()
+# t2 ='0D6AFB7E939F0936F40AFDC759B5A354EA5427EC250A47E7B904AB1EA800A01D'.lower()
+# t4 ='8739C76E681F900923B900C9DF0EF75CF421D39CABB54650C4B9AD19B6A76D85'.lower()
 
 
 virus_list = [t1, v1, v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22]
@@ -229,17 +232,21 @@ def toplevelwin():
         with open('susfile.txt','w',encoding='UTF-8') as f:
             for name in sus_path1:
                 f.write(name+'\n')
+        lencant = 0
+        lenfile = 0
+        lensus = 0
 
     else:
         text = Label(top, text='검사가 종료되었습니다.')
         text1 = Label(top, text='검사한 파일: ' + str(lenfile))
         text2 = Label(top, text='의심되는 파일: ' + str(lensus))
         text3 = Label(top, text='검사를 진행할 수 없는 파일: ' + str(lencant))
+        # btn_ok = Button(asslabel, text="확인", command = top.destroy)
         text.pack()
         text1.pack()
         text2.pack()
         text3.pack()
-
+        # btn_ok.pack(side="left")
 
     # lab = Label(top, text='검사가 종료되었습니다. \n검사한 파일: '+  str(lenfile) + '개\n의심되는 파일: '+ str(lensus) + '개 \n의심되는 파일 경로: ' + str(sus_path1) +'\n의심되는 파일을 제거 할까요?').pack()
 def removesus():
@@ -292,6 +299,148 @@ def selftype():
     btn = Button(top1, text='완료', command=clickevent)
     btn.pack()
 
+state_file1 = 'switch_state1.pkl'
+state_file2 = 'switch_state2.pkl'
+
+# 스위치 상태를 저장하고 불러오는 함수
+def save_switch_state1(state):
+    with open(state_file1, 'wb') as f:
+        pickle.dump(state, f)
+
+def load_switch_state1():
+    try:
+        with open(state_file1, 'rb') as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return 0  # 파일이 없을 경우 기본 상태는 Off (0)
+
+def save_switch_state2(state):
+    with open(state_file2, 'wb') as f:
+        pickle.dump(state, f)
+
+def load_switch_state2():
+    try:
+        with open(state_file2, 'rb') as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return 0  # 파일이 없을 경우 기본 상태는 Off (0)
+
+def toggle_switch1():
+    if switch_var1.get() == 1:
+        label1.config(text="On")
+        auto_start()
+    else:
+        label1.config(text="Off")
+    # 스위치 상태 저장
+    save_switch_state1(switch_var1.get())
+
+def toggle_switch2():
+    a = Target()
+    if switch_var2.get() == 1:
+        label2.config(text="On")
+        a.run()
+    else:
+        label2.config(text="Off")
+    # 스위치 상태 저장
+    save_switch_state2(switch_var2.get())
+
+def setting():
+    global switch_var1
+    global switch_var2
+    global label1
+    global label2
+
+    top2 = Toplevel()
+    top2.geometry("550x200")
+    top2.title("vacin")
+
+    switch_var1 = IntVar(value=load_switch_state1())
+    lb1= Label(top2, text= "컴퓨터 부팅시 자동 검사")
+    switch1 = Checkbutton(top2, text="On/Off", variable=switch_var1, command=toggle_switch1)
+    label1 = Label(top2, text="ON" if switch_var1.get() == 1 else "OFF")
+
+    lb1.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+    switch1.grid(row=0, column=1, padx=10, pady=10, sticky="e")
+    label1.grid(row=0, column=2, padx=10, pady=10, sticky="w")
+
+    switch_var2 = IntVar(value=load_switch_state2())
+    lb2= Label(top2, text="파일 다운로드 시 자동 검사")
+    switch2 = Checkbutton(top2, text="On/Off", variable=switch_var2, command=toggle_switch2)
+    label2 = Label(top2, text="ON" if switch_var2.get() == 1 else "OFF")
+    lb2.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+    switch2.grid(row=3, column=1, padx=10, pady=10, sticky="e")
+    label2.grid(row=3, column=2, padx=10, pady=10, sticky="w")
+
+
+def auto_start():
+    current_script_directory = os.path.dirname(os.path.abspath(__file__))
+    relative_path_to_script = "vacin.py"
+    script_path = os.path.join(current_script_directory, relative_path_to_script)
+    print(f"파이썬 스크립트 경로: {script_path}")
+    task_name = "MyPythonTask"
+    task_description = "vacin will start"
+    command = f"{sys.executable} {script_path}"
+    userid= getpass.getuser()
+    xml_content = f"""<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Date>2023-10-07T00:00:00</Date>
+    <Author>username</Author>
+    <Description>{task_description}</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <BootTrigger>
+      <Enabled>true</Enabled>
+    </BootTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <UserId>{userid}</UserId>
+      <LogonType>Password</LogonType>
+      <RunLevel>HighestAvailable</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>true</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <IdleSettings>
+      <StopOnIdleEnd>true</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <DisallowStartOnRemoteAppSession>false</DisallowStartOnRemoteAppSession>
+    <UseUnifiedSchedulingEngine>true</UseUnifiedSchedulingEngine>
+    <WakeToRun>false</WakeToRun>
+    <ExecutionTimeLimit>PT72H</ExecutionTimeLimit>
+    <Priority>7</Priority>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>{command}</Command>
+      <Arguments>{script_path}</Arguments>
+    </Exec>
+  </Actions>
+</Task>
+"""
+
+#임시 파일 저장
+    temp_dir = tempfile.gettempdir()
+    task_xml_file = os.path.join(temp_dir, f"{task_name}.xml")
+    with open(task_xml_file, "w") as xml_file:
+        xml_file.write(xml_content)
+
+    subprocess.run(["schtasks", "/create", "/tn", task_name, "/xml", task_xml_file])
+
+
+    os.remove(task_xml_file)
+    
 def first():
     
     win.title("vacin")
@@ -301,18 +450,15 @@ def first():
 
     lb1 =Label(win, text =  "검사 방법 선택")
     photo = PhotoImage(file="setting.png")
-    photo = photo.subsample(20,20)
-    pbtn = Button(win, image=photo)
+    photo = photo.subsample(30,30)
+    pbtn = Button(win, image=photo, borderwidth=0, command= setting)
     pbtn.pack(anchor="e")
     lb1.pack(side = "top")
-    # pbtn.pack(anchor ="e",side='top')
     btn1 = Button(win, text="C드라이브 검사", width=18, command = Cdrive)
     btn2 = Button(win, text="폴더 불러오기", width=18, command=finddir)
     btn3 = Button(win, text="파일 불러오기", width=18, command = findfile)
     btn4 = Button(win, text="파일경로 직접 입력", width=18, command=selftype)
     btn5 = Button(win, text="종료하기", width=18, command = win.destroy)
-    photo = PhotoImage(file="setting.png")
-    plable = Label(win, image=photo)
     btn1.place(x=80, y=100)
     btn2.place(x=80, y=150)
     btn3.place(x=80, y=200)
@@ -365,51 +511,8 @@ class Handler(FileSystemEventHandler):
         print("deleted")
         print(event.src_path)
 
-#-------------------------------------------------------------------------------------------------------------------------------------
-
-# def short_key():
-#     store = set()
-    
-#     HOT_KEYS = {
-#         'print_hello': set([ Key.alt_l, Key.shift_l ,KeyCode(char='v')] )
-#     }
-#     def print_hello():
-#         first()
-#     def handleKeyPress( key ):
-#         store.add( key )
-    
-#         for action, trigger in HOT_KEYS.items():
-#             CHECK = all([ True if triggerKey in store else False for triggerKey in trigger ])
-    
-#             if CHECK:
-#                 try:
-#                     func = eval( action )
-#                     if callable( func ):
-#                         func()
-#                 except NameError as err:
-#                     print( err )
-    
-#     def handleKeyRelease( key ):
-#         if key in store:
-#             store.remove( key )
-            
-#         # 종료
-#         if key == Key.esc:
-#             return False
-    
-#     with Listener(on_press=handleKeyPress, on_release=handleKeyRelease) as listener:
-#         listener.join()
-
-#-------------------------------------------------------------------------------------------------------------------------------------
-
 
 if __name__ == "__main__":
-    # w = Target()
-    # s = Process(target = short_key)
-    # a = Process(target = w.run)
-    # a.start()
-    # s.start()
-    # w = Target()
-    # w.run()
-    first()
-
+    # first()
+    y=Target()
+    y.run()
