@@ -13,6 +13,7 @@ from pynput.keyboard import Key, KeyCode, Listener
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 import pickle
+import threading
 
 v1  ='ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa'.lower() #v1 ~V22 실제 악성코드의 sha256 코드
 v2  ='c365ddaa345cfcaff3d629505572a484cff5221933d68e4a52130b8bb7badaf9'.lower() #t1 테스트용 파일의 sha256 코드
@@ -36,7 +37,7 @@ v19 ='9588f2ef06b7e1c8509f32d8eddfa18041a9cc15b1c90d6da484a39f8dcdf967'.lower()
 v20 ='b43b234012b8233b3df6adb7c0a3b2b13cc2354dd6de27e092873bf58af2693c'.lower()
 v21 ='4186675cb6706f9d51167fb0f14cd3f8fcfb0065093f62b10a15f7d9a6c8d982'.lower()
 v22 ='09a46b3e1be080745a6d8d88d6b5bd351b1c7586ae0dc94d0c238ee36421cafa'.lower()
-t1 ='A37220E099E01D00D26E74678A0632F5A1F5FE819D864F593A2FAA01071706D7'.lower()
+t1 ='E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855'.lower()
 # t2 ='0D6AFB7E939F0936F40AFDC759B5A354EA5427EC250A47E7B904AB1EA800A01D'.lower()
 # t4 ='8739C76E681F900923B900C9DF0EF75CF421D39CABB54650C4B9AD19B6A76D85'.lower()
 
@@ -328,20 +329,23 @@ def load_switch_state2():
 def toggle_switch1():
     if switch_var1.get() == 1:
         label1.config(text="On")
-        auto_start()
+        print("auto_start")
     else:
         label1.config(text="Off")
     # 스위치 상태 저장
     save_switch_state1(switch_var1.get())
 
+watch_dog_process = None
 def toggle_switch2():
-    a = Target()
     if switch_var2.get() == 1:
         label2.config(text="On")
-        a.run()
+        subprocess.Popen(["python", "watch_dog.py"])
+        print('watch_dog.py실행')
     else:
         label2.config(text="Off")
-    # 스위치 상태 저장
+        if watch_dog_process:
+            watch_dog_process.terminate()
+            print('watch_dog.py 종료')
     save_switch_state2(switch_var2.get())
 
 def setting():
@@ -513,6 +517,12 @@ class Handler(FileSystemEventHandler):
 
 
 if __name__ == "__main__":
-    # first()
-    y=Target()
-    y.run()
+    # a= Target()
+    first()
+    # # a.run()
+    # thread_1 = threading.Thread(target=first())
+    # thread_2 = threading.Thread(target = a.run())
+    # thread_2.start()
+    # thread_1.start()
+
+    
